@@ -21,4 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "PulaAssignment"
 include(":app")
- 
+include(":pula-datasource")
+include(":pula-data")
+include(":pula-domain")
