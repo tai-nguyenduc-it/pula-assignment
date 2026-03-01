@@ -14,6 +14,7 @@ import com.example.pulaassignment.home.HomeScreen
 import com.example.pulaassignment.home.HomeViewModel
 import com.example.pulaassignment.surveydetail.SurveyDetailScreen
 import com.example.pulaassignment.surveylist.SurveyListScreen
+import com.example.pulaassignment.syncdashboard.SyncDashboardScreen
 
 @Composable
 fun AppNavGraph(
@@ -30,7 +31,7 @@ fun AppNavGraph(
             HomeScreen(
                 viewModel = viewModel,
                 onNavigateToSurveyList = { navController.navigate(Routes.SURVEY_LIST) },
-                onNavigateToSyncDashboard = { }
+                onNavigateToSyncDashboard = { navController.navigate(Routes.SYNC_DASHBOARD) }
             )
         }
         composable(Routes.SURVEY_LIST) {
@@ -52,6 +53,11 @@ fun AppNavGraph(
             arguments = listOf(navArgument("surveyId") { defaultValue = "" })
         ) {
             SurveyDetailScreen(
+                onNavigateBack = navController::navigateUp,
+            )
+        }
+        composable(Routes.SYNC_DASHBOARD) {
+            SyncDashboardScreen(
                 onNavigateBack = navController::navigateUp,
             )
         }
