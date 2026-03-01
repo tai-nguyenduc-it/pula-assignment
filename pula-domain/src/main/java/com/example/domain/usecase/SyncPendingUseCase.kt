@@ -62,7 +62,7 @@ class SyncPendingUseCase(
                 },
                 onFailure = { t ->
                     val failure = t as? DomainException ?: UnknownSyncDomainException(t)
-                    repository.updateSyncStatus(response.id, SyncStatusDomainModel.Failed)
+                    repository.recordSyncFailure(response.id, System.currentTimeMillis())
                     failed.add(SyncResultDomainModel.FailedResponse(response.id, failure))
                     if (failure.isRetryable()) {
                         consecutiveNetworkFailures++

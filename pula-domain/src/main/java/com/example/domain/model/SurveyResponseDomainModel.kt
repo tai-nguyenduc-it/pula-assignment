@@ -8,5 +8,7 @@ data class SurveyResponseDomainModel(
     val repeatingSections: List<RepeatingSectionDomainModel>,
     val attachmentPaths: List<String>,
     val syncStatus: SyncStatusDomainModel,
-    val createdAtMillis: Long
+    val createdAtMillis: Long,
+    val retryCount: Int = 0,
+    val lastAttemptAtMillis: Long? = null
 )

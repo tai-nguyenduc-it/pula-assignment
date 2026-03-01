@@ -12,5 +12,7 @@ data class SurveyDatabaseModel(
     val repeatingSectionsJson: String,
     val attachmentPathsJson: String,
     val syncStatus: String,             // Pending | Synced | Failed
-    val createdAtMillis: Long
+    val createdAtMillis: Long,
+    val retryCount: Int = 0,
+    val lastAttemptAtMillis: Long? = null
 )

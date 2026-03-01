@@ -17,7 +17,9 @@ fun SurveyResponseDomainModel.toDatabase() = SurveyDatabaseModel(
     repeatingSectionsJson = json.encodeToString(repeatingSections),
     attachmentPathsJson = json.encodeToString(attachmentPaths),
     syncStatus = syncStatus.toDatabaseStatus(),
-    createdAtMillis = createdAtMillis
+    createdAtMillis = createdAtMillis,
+    retryCount = retryCount,
+    lastAttemptAtMillis = lastAttemptAtMillis
 )
 
 fun SurveyDatabaseModel.toDomain() = SurveyResponseDomainModel(
@@ -30,5 +32,7 @@ fun SurveyDatabaseModel.toDomain() = SurveyResponseDomainModel(
     ),
     attachmentPaths = json.decodeFromString<List<String>>(attachmentPathsJson),
     syncStatus = syncStatus.toSyncStatusDomainModel(),
-    createdAtMillis = createdAtMillis
+    createdAtMillis = createdAtMillis,
+    retryCount = retryCount,
+    lastAttemptAtMillis = lastAttemptAtMillis
 )

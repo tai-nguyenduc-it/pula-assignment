@@ -21,6 +21,9 @@ class SurveyRepositoryImpl(
     override suspend fun getResponseById(id: String): SurveyResponseDomainModel? =
         dao.getById(id)?.toDomain()
 
+    override fun getAllResponses(): Flow<List<SurveyResponseDomainModel>> =
+        dao.getAllFlow().map { list -> list.map { it.toDomain() } }
+
     override fun getPendingResponses(): Flow<List<SurveyResponseDomainModel>> =
         dao.getPendingFlow().map { list -> list.map { it.toDomain() } }
 
@@ -31,5 +34,15 @@ class SurveyRepositoryImpl(
         dao.updateStatus(id, status.toDatabaseStatus())
     }
 
+    override suspend fun recordSyncFailure(id: String, attemptAtMillis: Long) {
+        dao.recordFailure(id, attemptAtMillis)
+    }
+
+    override suspend fun deleteResponse(id: String) {
+        dao.deleteById(id)
+    }
+
     override fun observePendingCount(): Flow<Int> = dao.observePendingCount()
+    override fun observeSyncedCount(): Flow<Int> = dao.observeSyncedCount()
+    override fun observeFailedCount(): Flow<Int> = dao.observeFailedCount()
 }

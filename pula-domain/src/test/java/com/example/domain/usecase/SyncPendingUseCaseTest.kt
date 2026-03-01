@@ -170,25 +170,33 @@ class SyncPendingUseCaseTest {
 
     private class FakeSurveyRepository : SurveyRepository {
         private val storage = mutableMapOf<String, SurveyResponseDomainModel>()
+        private val allList = mutableListOf<SurveyResponseDomainModel>()
+        private val allFlow = kotlinx.coroutines.flow.MutableStateFlow<List<SurveyResponseDomainModel>>(emptyList())
         private val pendingFlow = kotlinx.coroutines.flow.MutableStateFlow<List<SurveyResponseDomainModel>>(emptyList())
 
         fun add(vararg responses: SurveyResponseDomainModel) {
             responses.forEach { storage[it.id] = it }
-            updatePendingFlow()
+            updateFlows()
         }
 
-        private fun updatePendingFlow() {
-            pendingFlow.value = storage.values
+        private fun updateFlows() {
+            val all = storage.values.toList()
+            allList.clear()
+            allList.addAll(all)
+            allFlow.value = all
+            pendingFlow.value = all
                 .filter { it.syncStatus == SyncStatusDomainModel.Pending || it.syncStatus == SyncStatusDomainModel.Failed }
                 .sortedBy { it.createdAtMillis }
         }
 
         override suspend fun saveResponse(response: SurveyResponseDomainModel) {
             storage[response.id] = response
-            updatePendingFlow()
+            updateFlows()
         }
 
         override suspend fun getResponseById(id: String) = storage[id]
+
+        override fun getAllResponses() = allFlow
 
         override fun getPendingResponses() = pendingFlow
 
@@ -196,10 +204,28 @@ class SyncPendingUseCaseTest {
 
         override suspend fun updateSyncStatus(id: String, status: SyncStatusDomainModel) {
             storage[id]?.let { storage[id] = it.copy(syncStatus = status) }
-            updatePendingFlow()
+            updateFlows()
+        }
+
+        override suspend fun recordSyncFailure(id: String, attemptAtMillis: Long) {
+            storage[id]?.let { model ->
+                storage[id] = model.copy(
+                    syncStatus = SyncStatusDomainModel.Failed,
+                    retryCount = model.retryCount + 1,
+                    lastAttemptAtMillis = attemptAtMillis
+                )
+            }
+            updateFlows()
+        }
+
+        override suspend fun deleteResponse(id: String) {
+            storage.remove(id)
+            updateFlows()
         }
 
         override fun observePendingCount() = pendingFlow.map { it.size }
+        override fun observeSyncedCount() = allFlow.map { list -> list.count { it.syncStatus == SyncStatusDomainModel.Synced } }
+        override fun observeFailedCount() = allFlow.map { list -> list.count { it.syncStatus == SyncStatusDomainModel.Failed } }
     }
 
     private class FakeSurveyResponseUploadRepository(
