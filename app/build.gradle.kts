@@ -6,9 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.pulaassignment"
-    compileSdk {
-        version = release(libs.versions.compileSdk.get().toInt())
-    }
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.example.pulaassignment"
