@@ -13,7 +13,12 @@
 
 ## What architecture did you choose and why? What alternatives did you consider?
 
-I chose **Clean Architecture** with three modules: **domain**, **data**, and **datasource**. The domain holds repository interfaces and use cases; the data layer implements repositories and maps between domain models and datasource types; the datasource provides Room for local persistence and a mock upload API. Only the data module depends on domain and datasource, so the domain stays free of frameworks and I/O. Sync logic (which responses to retry, when to stop on network issues) lives in the use case, making behaviour easy to test with fakes.
+I chose **MVI + Clean Architecture** with three modules: **domain**, **data**, and **datasource**. The domain holds repository interfaces and use cases; the data layer implements repositories and maps between domain models and datasource types; the datasource provides Room for local persistence and a mock upload API. Only the data module depends on domain and datasource, so the domain stays free of frameworks and I/O. Sync logic (which responses to retry, when to stop on network issues) lives in the use case, making behaviour easy to test with fakes.
+
+**Technical summary:**
+- **Stack:** Kotlin, Coroutines/Flow, Room, Hilt, Compose, Navigation Compose. UI pattern: MVI (Intent → ViewModel → StateFlow + SharedFlow for effects).
+- **Modules:** `pula-domain` (interfaces, models, use cases) ← `pula-data` (repository impl, mappers) ← `app`; `pula-datasource` (Room DAO, API) used only by `pula-data`. No framework types in domain.
+- **App:** Single Activity, `NavHost` + `hiltViewModel()` per route. Screens: sealed Intent, single State, one-shot Effect for navigation/Toast. DI: `DatasourceModule`, `DataModule`, `DomainModule` in `app/di`.
 
 **Use case outputs (name: what it does):**
 
