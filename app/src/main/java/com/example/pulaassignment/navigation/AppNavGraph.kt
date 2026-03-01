@@ -7,6 +7,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.pulaassignment.createsurvey.CreateSurveyScreen
+import com.example.pulaassignment.createsurvey.CreateSurveyViewModel
 import com.example.pulaassignment.home.HomeScreen
 import com.example.pulaassignment.home.HomeViewModel
 import com.example.pulaassignment.surveylist.SurveyListScreen
@@ -31,9 +33,16 @@ fun AppNavGraph(
         }
         composable(Routes.SURVEY_LIST) {
             SurveyListScreen(
-                onNavigateBack = { navController.popBackStack() },
-                onNavigateToCreate = { },
+                onNavigateBack = navController::navigateUp,
+                onNavigateToCreate = { navController.navigate(Routes.CREATE_SURVEY) },
                 onNavigateToDetail = { }
+            )
+        }
+        composable(Routes.CREATE_SURVEY) {
+            val viewModel: CreateSurveyViewModel = hiltViewModel()
+            CreateSurveyScreen(
+                viewModel = viewModel,
+                onNavigateBack = navController::navigateUp,
             )
         }
     }
