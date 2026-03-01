@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.pulaassignment.home.HomeScreen
 import com.example.pulaassignment.home.HomeViewModel
+import com.example.pulaassignment.surveylist.SurveyListScreen
 
 @Composable
 fun AppNavGraph(
@@ -24,8 +25,15 @@ fun AppNavGraph(
             val viewModel: HomeViewModel = hiltViewModel()
             HomeScreen(
                 viewModel = viewModel,
-                onNavigateToSurveyList = { },
+                onNavigateToSurveyList = { navController.navigate(Routes.SURVEY_LIST) },
                 onNavigateToSyncDashboard = { }
+            )
+        }
+        composable(Routes.SURVEY_LIST) {
+            SurveyListScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToCreate = { },
+                onNavigateToDetail = { }
             )
         }
     }
